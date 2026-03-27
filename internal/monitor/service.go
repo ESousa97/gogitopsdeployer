@@ -117,7 +117,7 @@ func (m *Monitor) performCheck() {
 			m.notification.Notify(config.StatusSuccess, "Deploy successful.", hash)
 		}
 	} else {
-		// Discrete log for analysis
+		// Discreet log for analysis
 		fmt.Printf("[%s] No changes detected (HEAD: %s)\n",
 			time.Now().Format("15:04:05"), hash[:8])
 	}
