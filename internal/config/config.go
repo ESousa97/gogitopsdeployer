@@ -96,7 +96,7 @@ func LoadConfig() (*Config, error) {
 		SSHHost:           sshHost,
 		SSHUser:           sshUser,
 		SSHKeyPath:        sshKeyPath,
-		SSHCommands:       []string{sshCommandsStr}, // Por enquanto um comando composto
+		SSHCommands:       []string{sshCommandsStr}, // For now, a single composite command
 		RollbackCommand:   rollbackCommand,
 	}
 
@@ -127,7 +127,7 @@ func (c *Config) Validate() error {
 		return errors.New("LOCAL_PATH cannot be empty")
 	}
 
-	// Se SSHHost estiver definido, exige outras credenciais
+	// If SSHHost is defined, other credentials are required
 	if c.SSHHost != "" {
 		if c.SSHUser == "" {
 			return errors.New("SSH_USER is required when SSH_HOST is provided")

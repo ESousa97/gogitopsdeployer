@@ -1,48 +1,43 @@
 # Contributing to gogitopsdeployer
 
-Thank you for your interest in contributing to **gogitopsdeployer**! This project follows the **Antigravity** engineering principles: modularity, statelessness, and robust error handling.
+First of all, thank you for considering contributing to **gogitopsdeployer**! It is people like you who make the open-source community an amazing place to learn, inspire, and create.
 
-## Development Setup
+## Principles & Guidelines
 
-### Prerequisites
-- **Go**: Version 1.25.0 or higher.
-- **Git**: Latest version.
-- **Make**: For running build automation.
+This project follows the **Antigravity** engineering pillars. Before proposing any changes, please ensure your code aligns with these principles:
 
-### Initializing Environment
-```bash
-git clone https://github.com/ESousa97/gogitopsdeployer.git
-cd gogitopsdeployer
-make tidy
-```
+1. **Extreme Modularization**: Single responsibility per file. Logic vs. Presentation separation.
+2. **Stateless by Design**: No local memory state. Use distributed stores or persistence for stateful data.
+3. **Typed Configuration**: Absolute zero hardcoded credentials or URLs. All configuration must be validated at boot time.
+4. **Composition over Inheritance**: Small, reusable building blocks combined into complex systems.
+5. **Contract First**: Typed interfaces between modules and shared types for communication.
 
-## Engineering Standards
+## How to Contribute
 
-### Code Style
-- Follow [Effective Go](https://golang.org/doc/effective_go.html).
-- Run `make lint` before every commit.
-- Every exported function, type, or constant **must** have a Godoc comment.
-- No "magic values". Use configuration or constants.
+### Reporting Bugs
+- Use the **GitHub Issues** tab.
+- Describe the unexpected behavior, steps to reproduce, and your environment.
 
-### Project Structure
-- `cmd/`: CLI entry points. Keep `main.go` lean.
-- `internal/`: Private business logic. Organized by bounded contexts.
-- `pkg/`: (If created) Libraries safe for external use.
+### Proposing Features
+- Open an issue to discuss the proposal before starting implementation.
+- This ensures alignment with the project's roadmap and architectural pillars.
 
-## Workflow
+### Pull Requests
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feature/amazing-feature`).
+3. Ensure all tests pass (`make test`).
+4. Run static analysis (`make lint`).
+5. Commit your changes following [Conventional Commits](https://www.conventionalcommits.org/).
+6. Push to the branch and open a PR.
 
-1. **Fork** the repository.
-2. Create a **feature branch** (`feat/your-feature` or `fix/your-fix`).
-3. Implement changes with **unit tests**.
-4. Run `make test` and `make lint`.
-5. Submit a **Pull Request** with a clear description of changes.
+## Coding Standards
 
-## Commit Convention
-We prefer [Conventional Commits](https://www.conventionalcommits.org/):
-- `feat:` for new features.
-- `fix:` for bug fixes.
-- `docs:` for documentation updates.
-- `refactor:` for code restructuring.
+- **Language**: Variable names, functions, and files in **English**.
+- **Documentation**: All exported items must have **Godoc** comments.
+- **Formatting**: Use `gofmt` (handled by `make tidy` or your IDE).
+
+---
+Let's build a more resilient GitOps future together!
 
 ## Issues and Discussions
 Check the [Issues](https://github.com/ESousa97/gogitopsdeployer/issues) tab before starting work to avoid duplication.

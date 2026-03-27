@@ -34,7 +34,7 @@ func NewService(cfg *config.Config, triggerChan chan struct{}) *Service {
 // It exposes the /webhook endpoint on the configured [config.WebhookPort].
 func (s *Service) Start() error {
 	http.HandleFunc("/webhook", s.handleWebhook)
-	fmt.Printf("[Webhook] Servidor escutando na porta %s...\n", s.cfg.WebhookPort)
+	fmt.Printf("[Webhook] Server listening on port %s...\n", s.cfg.WebhookPort)
 	return http.ListenAndServe(":"+s.cfg.WebhookPort, nil)
 }
 
@@ -54,37 +54,37 @@ func (s *Service) handleWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	// Validacao de Assinatura HMAC (se configurado)
+	// HMAC Signature Validation (if configured)
 	if s.cfg.WebhookSecret != "" {
 		signature := r.Header.Get("X-Hub-Signature-256")
 		if !s.validateSignature(payload, signature) {
-			fmt.Println("[Webhook] Assinatura invalida recebida.")
+			fmt.Println("[Webhook] Invalid signature received.")
 			http.Error(w, "Invalid signature", http.StatusForbidden)
 			return
 		}
 	}
 
-	// Verifica se e um evento de push
+	// Check if it is a push event
 	event := r.Header.Get("X-GitHub-Event")
 	if event != "push" && event != "ping" {
-		fmt.Printf("[Webhook] Evento ignorado: %s\n", event)
+		fmt.Printf("[Webhook] Event ignored: %s\n", event)
 		w.WriteHeader(http.StatusOK)
 		return
 	}
 
 	if event == "ping" {
-		fmt.Println("[Webhook] Ping recebido do GitHub.")
+		fmt.Println("[Webhook] Ping received from GitHub.")
 		w.WriteHeader(http.StatusOK)
 		return
 	}
 
-	fmt.Println("[Webhook] Push detectado! Disparando deploy imediato...")
+	fmt.Println("[Webhook] Push detected! Triggering immediate deployment...")
 	
-	// Envia sinal para o monitor (sem bloquear)
+	// Send signal to monitor (non-blocking)
 	select {
 	case s.triggerChan <- struct{}{}:
 	default:
-		fmt.Println("[Webhook] Deploy ja em fila ou em processamento.")
+		fmt.Println("[Webhook] Deployment already queued or in progress.")
 	}
 
 	w.WriteHeader(http.StatusAccepted)

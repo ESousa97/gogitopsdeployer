@@ -48,14 +48,14 @@ type DiscordEmbed struct {
 // to specific colors and creates an informative embed message.
 func (s *Service) Notify(status, message, hash string) error {
 	if s.cfg.DiscordWebhookURL == "" {
-		return nil // Discord nao configurado
+		return nil // Discord not configured
 	}
 
-	color := 0x2ecc71 // Verde (Success)
+	color := 0x2ecc71 // Green (Success)
 	if status == config.StatusFailed {
-		color = 0xe74c3c // Vermelho (Failed)
+		color = 0xe74c3c // Red (Failed)
 	} else if status == config.StatusRollback {
-		color = 0xf1c40f // Amarelo (Rollback)
+		color = 0xf1c40f // Yellow (Rollback)
 	}
 
 	payload := DiscordPayload{
@@ -67,7 +67,7 @@ func (s *Service) Notify(status, message, hash string) error {
 				Footer: struct {
 					Text string `json:"text"`
 				}{
-					Text: fmt.Sprintf("Agente: gogitopsdeployer | %s", time.Now().Format("15:04:05")),
+					Text: fmt.Sprintf("Agent: gogitopsdeployer | %s", time.Now().Format("15:04:05")),
 				},
 			},
 		},

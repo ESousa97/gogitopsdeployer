@@ -1,66 +1,38 @@
 # gogitopsdeployer
 
-> Agente GitOps em Go para monitoramento resiliente de repositórios e automação de deploys.
+> A lightweight, modular GitOps agent for automated repository monitoring and remote deployment via SSH.
 
 ![CI](https://github.com/ESousa97/gogitopsdeployer/actions/workflows/ci.yml/badge.svg)
-![Go Report Card](https://goreportcard.com/badge/github.com/ESousa97/gogitopsdeployer)
-![Go Reference](https://pkg.go.dev/badge/github.com/ESousa97/gogitopsdeployer.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ESousa97/gogitopsdeployer)](https://goreportcard.com/report/github.com/ESousa97/gogitopsdeployer)
+[![Go Reference](https://pkg.go.dev/badge/github.com/ESousa97/gogitopsdeployer.svg)](https://pkg.go.dev/github.com/ESousa97/gogitopsdeployer)
 ![License](https://img.shields.io/github/license/ESousa97/gogitopsdeployer)
 ![Go Version](https://img.shields.io/github/go-mod/go-version/ESousa97/gogitopsdeployer)
 ![Last Commit](https://img.shields.io/github/last-commit/ESousa97/gogitopsdeployer)
 
 ---
 
-O **gogitopsdeployer** é um agente leve e modular projetado para automatizar o ciclo de entrega contínua (CD) em ambientes distribuídos. Ele monitora alterações em repositórios Git, dispara execuções remotas via SSH e garante a estabilidade do sistema com mecanismos de rollback automático e notificações em tempo real.
+**gogitopsdeployer** is a GitOps agent designed for simplicity and reliability. It monitors a Git repository for changes and automatically triggers a deployment process to remote servers via SSH. It features built-in rollback mechanisms, Discord notifications, and a GitHub webhook listener for instantaneous updates.
 
-## Demonstração
+## Roadmap
 
-### CLI History
-```bash
-gogitopsdeployer history
-```
+- [x] **Phase 1: Foundation** — Project structure, Configuration (Env Vars), and standard Logging.
+- [x] **Phase 2: GitOps Core** — Repository monitoring (`go-git`), commit hash comparison, and change detection.
+- [x] **Phase 3: Deployment & Infrastructure** — SSH client implementation, remote command execution, and rollback logic.
+- [x] **Phase 4: Persistence & Observability** — SQLite storage for deployment history and Discord webhook notifications.
+- [x] **Phase 5: Immediate Triggers** — GitHub Webhook listener with HMAC signature validation.
 
-### Discord Notification
-O agente envia cartões detalhados para o Discord com o status de cada operação:
-- **Sucesso**: Deploy concluído na infraestrutura alvo.
-- **Falha**: Erro detectado durante a execução remota.
-- **Rollback**: Restauração automática para a última versão estável.
+## Quick Start
 
-## Stack Tecnológico
-
-| Tecnologia | Papel |
-|---|---|
-| Go 1.25 | Linguagem principal e runtime |
-| go-git | Manipulação nativa de repositórios Git |
-| SQLite | Persistência de histórico de deploys |
-| SSH (crypto/ssh) | Execução de comandos remotos e gestão de estado |
-| Discord Webhooks | Sistema de notificações e alertas |
-
-## Pré-requisitos
-
-- Go >= 1.25.0
-- Acesso SSH configurado na máquina alvo (chave privada)
-- Banco de dados SQLite (criado automaticamente)
-
-## Instalação e Uso
-
-### Como binário
+### Installation
 
 ```bash
+# Via go install
 go install github.com/ESousa97/gogitopsdeployer/cmd/agent@latest
-```
 
-### A partir do source
-
-```bash
+# From source
 git clone https://github.com/ESousa97/gogitopsdeployer.git
 cd gogitopsdeployer
-cp .env.example .env
-# Edite .env com suas configurações
 make build
-./bin/gogitopsdeployer
-```
-
 ## Makefile Targets
 
 | Target | Descrição |

@@ -27,12 +27,12 @@ func NewService(cfg *config.Config) *Service {
 // It returns the combined output of all commands or an error.
 func (s *Service) RunCommands() (string, error) {
 	if s.cfg.SSHHost == "" {
-		return "", nil // SSH nao configurado
+		return "", nil // SSH not configured
 	}
 
-	fmt.Printf("[SSH] Conectando a %s@%s...\n", s.cfg.SSHUser, s.cfg.SSHHost)
+	fmt.Printf("[SSH] Connecting to %s@%s...\n", s.cfg.SSHUser, s.cfg.SSHHost)
 
-	// 1. Carrega a chave privada
+	// 1. Load private key
 	key, err := os.ReadFile(s.cfg.SSHKeyPath)
 	if err != nil {
 		return "", fmt.Errorf("unable to read private key: %v", err)
@@ -43,16 +43,16 @@ func (s *Service) RunCommands() (string, error) {
 		return "", fmt.Errorf("unable to parse private key: %v", err)
 	}
 
-	// 2. Configura o cliente
+	// 2. Client setup
 	config := &ssh.ClientConfig{
 		User: s.cfg.SSHUser,
 		Auth: []ssh.AuthMethod{
 			ssh.PublicKeys(signer),
 		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // Nota: Em producao, use verificacao de HostKey real
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // Note: In production, use real HostKey verification
 	}
 
-	// 3. Conecta ao host
+	// 3. Connect to host
 	client, err := ssh.Dial("tcp", s.cfg.SSHHost+":22", config)
 	if err != nil {
 		return "", fmt.Errorf("failed to dial: %v", err)
@@ -61,9 +61,9 @@ func (s *Service) RunCommands() (string, error) {
 
 	var combinedOutput string
 
-	// 4. Executa os comandos
+	// 4. Run commands
 	for _, cmd := range s.cfg.SSHCommands {
-		fmt.Printf("[SSH] Executando: %s\n", cmd)
+		fmt.Printf("[SSH] Executing: %s\n", cmd)
 		
 		session, err := client.NewSession()
 		if err != nil {
@@ -74,8 +74,8 @@ func (s *Service) RunCommands() (string, error) {
 		combinedOutput += string(output) + "\n"
 		
 		if err != nil {
-			fmt.Printf("[SSH] Erro no comando: %v\n", err)
-			fmt.Printf("[SSH] Output de Erro:\n%s\n", string(output))
+			fmt.Printf("[SSH] Command error: %v\n", err)
+			fmt.Printf("[SSH] Error Output:\n%s\n", string(output))
 			session.Close()
 			return combinedOutput, err
 		}
@@ -84,7 +84,7 @@ func (s *Service) RunCommands() (string, error) {
 		session.Close()
 	}
 
-	fmt.Println("[SSH] Todos os comandos executados com sucesso.")
+	fmt.Println("[SSH] All commands executed successfully.")
 	return combinedOutput, nil
 }
 
@@ -95,9 +95,9 @@ func (s *Service) RunRollback() (string, error) {
 		return "", nil
 	}
 
-	fmt.Printf("[SSH] Iniciando ROLLBACK em %s...\n", s.cfg.SSHHost)
+	fmt.Printf("[SSH] Starting ROLLBACK on %s...\n", s.cfg.SSHHost)
 
-	// Carrega a chave privada
+	// Load private key
 	key, err := os.ReadFile(s.cfg.SSHKeyPath)
 	if err != nil {
 		return "", err

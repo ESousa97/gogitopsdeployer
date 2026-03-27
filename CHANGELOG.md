@@ -5,21 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-03-26
+## [1.0.0] - 2026-03-27
 
 ### Added
-- Professional documentation suite (README, CONTRIBUTING, LICENSE, etc.).
-- Robust Makefile for build automation.
-- Full Godoc coverage for internal packages and CLI.
-- Modular architecture implementation based on Domain-Driven Design.
-- GitOps monitoring loop with commit hash detection.
-- SSH execution engine with automatic rollback capability.
-- Discord notification system for deployment lifecycle events.
-- SQLite persistence layer for deployment history.
-- Webhook support with HMAC validation.
+- **Standard Documentation**: Added comprehensive `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, and `CODE_OF_CONDUCT.md`.
+- **Infrastructure Automation**: Integrated `Makefile` for standardized build, test, and linting pipelines.
+- **Godoc Documentation**: 100% documentation coverage for all exported types and functions in `internal` and `cmd` packages.
+- **GitOps Engine**: High-performance monitoring and change detection for remote Git repositories.
+- **SSH Deployment**: Robust implementation of remote command execution with automatic rollback.
+- **Persistence**: SQLite-backed storage for deployment history tracking.
+- **Notification**: Real-time alerts via Discord webhooks.
+- **Immediate Triggers**: HTTP listener for GitHub webhooks with HMAC signature validation.
 
-### Changed
-- Standardized project structure for better scalability.
+---
+*Initial professional release.*
+zed project structure for better scalability.
 - Improved error handling and resilience in the monitoring loop.
 
 ### Fixed

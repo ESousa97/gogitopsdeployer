@@ -21,82 +21,82 @@ import (
 )
 
 func main() {
-	// 1. Carrega Configuracoes (Config Tipada - P3 Antigravity)
+	// 1. Load Configurations (Typed Config - Antigravity P3)
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Erro ao carregar configuracoes: %v", err)
+		log.Fatalf("Error loading configurations: %v", err)
 	}
 
-	// 2. Inicializa Storage (SQLite)
+	// 2. Initialize Storage (SQLite)
 	db, err := storage.NewService(cfg.DBPath)
 	if err != nil {
-		log.Fatalf("Erro ao inicializar banco de dados: %v", err)
+		log.Fatalf("Error initializing database: %v", err)
 	}
 	defer db.Close()
 
-	// 3. Verifica Subcomandos
+	// 3. Check Subcommands
 	if len(os.Args) > 1 && os.Args[1] == "history" {
 		showHistory(db)
 		return
 	}
 
-	fmt.Println("=== GOGITOPSDEPLOYER INICIANDO ===")
+	fmt.Println("=== GOGITOPSDEPLOYER STARTING ===")
 
-	// 4. Inicializa Canais de Comunicacao
+	// 4. Initialize Communication Channels
 	triggerChan := make(chan struct{}, 1)
 
-	// 5. Inicializa Servicos (Inversao de Dependencia - P1 Antigravity)
+	// 5. Initialize Services (Dependency Inversion - Antigravity P1)
 	gitOps := gitops.NewService(cfg)
 	sshService := ssh.NewService(cfg)
 	notifier := notification.NewService(cfg)
 	agent := monitor.NewMonitor(cfg, gitOps, sshService, db, notifier, triggerChan)
 	webhookSvc := webhook.NewService(cfg, triggerChan)
 
-	// 6. Roda o Servidor Webhook em Background
+	// 6. Run Webhook Server in Background
 	go func() {
 		if err := webhookSvc.Start(); err != nil {
-			log.Printf("Erro no servidor Webhook: %v\n", err)
+			log.Printf("Webhook server error: %v\n", err)
 		}
 	}()
 
-	// 7. Setup de Context para Shutdown Gracioso
+	// 7. Context Setup for Graceful Shutdown
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// Captura sinais de sistema
+	// Capture system signals
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		<-sigChan
-		fmt.Println("\nSinal de interrupcao recebido. Finalizando agente...")
+		fmt.Println("\nInterrupt signal received. Shutting down agent...")
 		cancel()
 	}()
 
-	// 4. Inicia o Monitor
-	fmt.Printf("Monitorando repositorio: %s\n", cfg.RepoURL)
+	// 8. Start the Monitor
+	fmt.Printf("Monitoring repository: %s\n", cfg.RepoURL)
 	if err := agent.Start(ctx); err != nil {
-		log.Fatalf("Erro fatal no monitor: %v", err)
+		log.Fatalf("Fatal error in monitor: %v", err)
 	}
 
-	fmt.Println("=== GOGITOPSDEPLOYER FINALIZADO ===")
+	fmt.Println("=== GOGITOPSDEPLOYER FINISHED ===")
 }
 
 // showHistory queries the [storage.Service] for recent deployment events
 // and prints them in a formatted table to the standard output.
 func showHistory(db *storage.Service) {
-	fmt.Println("=== HISTORICO DE DEPLOYS (Ultimos 10) ===")
+	fmt.Println("=== DEPLOYMENT HISTORY (Latest 10) ===")
 	history, err := db.GetHistory(10)
 	if err != nil {
-		log.Fatalf("Erro ao buscar historico: %v", err)
+		log.Fatalf("Error fetching history: %v", err)
 	}
 
 	if len(history) == 0 {
-		fmt.Println("Nenhum deploy registrado ainda.")
+		fmt.Println("No deployments recorded yet.")
 		return
 	}
 
-	fmt.Printf("%-5s | %-8s | %-10s | %-20s\n", "ID", "HASH", "STATUS", "DATA")
+	fmt.Printf("%-5s | %-8s | %-10s | %-20s\n", "ID", "HASH", "STATUS", "DATE")
 	fmt.Println("------------------------------------------------------------")
 	for _, d := range history {
 		hashShort := d.Hash
