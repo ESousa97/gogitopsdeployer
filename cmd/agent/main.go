@@ -11,6 +11,7 @@ import (
 	"gogitopsdeployer/internal/config"
 	"gogitopsdeployer/internal/gitops"
 	"gogitopsdeployer/internal/monitor"
+	"gogitopsdeployer/internal/ssh"
 )
 
 func main() {
@@ -24,7 +25,8 @@ func main() {
 
 	// 2. Inicializa Servicos (Inversao de Dependencia - P1 Antigravity)
 	gitOps := gitops.NewService(cfg)
-	agent := monitor.NewMonitor(cfg, gitOps)
+	sshService := ssh.NewService(cfg)
+	agent := monitor.NewMonitor(cfg, gitOps, sshService)
 
 	// 3. Setup de Context para Shutdown Gracioso
 	ctx, cancel := context.WithCancel(context.Background())

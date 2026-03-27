@@ -7,19 +7,22 @@ import (
 
 	"gogitopsdeployer/internal/config"
 	"gogitopsdeployer/internal/gitops"
+	"gogitopsdeployer/internal/ssh"
 )
 
 // Monitor orquestra o loop de checagem.
 type Monitor struct {
-	cfg    *config.Config
-	gitOps *gitops.Service
+	cfg        *config.Config
+	gitOps     *gitops.Service
+	sshService *ssh.Service
 }
 
 // NewMonitor cria uma nova instancia do orquestrador.
-func NewMonitor(cfg *config.Config, gitOps *gitops.Service) *Monitor {
+func NewMonitor(cfg *config.Config, gitOps *gitops.Service, sshService *ssh.Service) *Monitor {
 	return &Monitor{
-		cfg:    cfg,
-		gitOps: gitOps,
+		cfg:        cfg,
+		gitOps:     gitOps,
+		sshService: sshService,
 	}
 }
 
@@ -50,9 +53,17 @@ func (m *Monitor) Start(ctx context.Context) error {
 			if changed {
 				fmt.Printf("Nova versao detectada: [%s]\n", hash)
 				
-				// Opcional: Baixar as mudancas de fato
+				// 1. Baixar as mudancas localmente
 				if err := m.gitOps.UpdateLocal(); err != nil {
 					fmt.Printf("Erro ao baixar mudancas: %v\n", err)
+					continue
+				}
+
+				// 2. Disparar comandos SSH na VPS (se configurado)
+				if m.cfg.SSHHost != "" {
+					if err := m.sshService.RunCommands(); err != nil {
+						fmt.Printf("Erro ao executar comandos SSH: %v\n", err)
+					}
 				}
 			} else {
 				// Log discreto para estudo
