@@ -1,4 +1,4 @@
-module gogitopsdeployer
+module github.com/ESousa97/gogitopsdeployer
 
 go 1.25.0
 

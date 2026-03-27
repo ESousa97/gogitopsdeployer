@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"strings"
 
-	"gogitopsdeployer/internal/config"
+	"github.com/ESousa97/gogitopsdeployer/internal/config"
 )
 
 // Service implements an HTTP handler that listens for inbound repository

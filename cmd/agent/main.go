@@ -11,13 +11,13 @@ import (
 	"os/signal"
 	"syscall"
 
-	"gogitopsdeployer/internal/config"
-	"gogitopsdeployer/internal/gitops"
-	"gogitopsdeployer/internal/monitor"
-	"gogitopsdeployer/internal/notification"
-	"gogitopsdeployer/internal/ssh"
-	"gogitopsdeployer/internal/storage"
-	"gogitopsdeployer/internal/webhook"
+	"github.com/ESousa97/gogitopsdeployer/internal/config"
+	"github.com/ESousa97/gogitopsdeployer/internal/gitops"
+	"github.com/ESousa97/gogitopsdeployer/internal/monitor"
+	"github.com/ESousa97/gogitopsdeployer/internal/notification"
+	"github.com/ESousa97/gogitopsdeployer/internal/ssh"
+	"github.com/ESousa97/gogitopsdeployer/internal/storage"
+	"github.com/ESousa97/gogitopsdeployer/internal/webhook"
 )
 
 func main() {

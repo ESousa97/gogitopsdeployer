@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"gogitopsdeployer/internal/config"
+	"github.com/ESousa97/gogitopsdeployer/internal/config"
 
 	"golang.org/x/crypto/ssh"
 )

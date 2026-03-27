@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"gogitopsdeployer/internal/config"
+	"github.com/ESousa97/gogitopsdeployer/internal/config"
 )
 
 func TestHandleWebhook(t *testing.T) {

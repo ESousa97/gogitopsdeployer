@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"gogitopsdeployer/internal/config"
+	"github.com/ESousa97/gogitopsdeployer/internal/config"
 )
 
 // Service handles the dispatching of notifications to external webhooks.

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"gogitopsdeployer/internal/config"
+	"github.com/ESousa97/gogitopsdeployer/internal/config"
 )
 
 func TestEnsureClone(t *testing.T) {
