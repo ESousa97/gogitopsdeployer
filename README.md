@@ -28,21 +28,26 @@
 ```bash
 # Via go install
 go install github.com/ESousa97/gogitopsdeployer/cmd/agent@latest
+```
 
 # From source
+
+```bash
 git clone https://github.com/ESousa97/gogitopsdeployer.git
 cd gogitopsdeployer
 make build
+```
+
 ## Makefile Targets
 
-| Target | Descrição |
-|---|---|
-| `make build` | Compila o binário do agente em `bin/` |
-| `make run` | Executa o agente diretamente via Go |
-| `make test` | Executa a suíte de testes unitários |
-| `make lint` | Executa análise estática via `go vet` |
-| `make tidy` | Limpa e atualiza dependências do `go.mod` |
-| `make clean` | Remove arquivos binários e temporários |
+| Target       | Descrição                                 |
+| ------------ | ----------------------------------------- |
+| `make build` | Compila o binário do agente em `bin/`     |
+| `make run`   | Executa o agente diretamente via Go       |
+| `make test`  | Executa a suíte de testes unitários       |
+| `make lint`  | Executa análise estática via `go vet`     |
+| `make tidy`  | Limpa e atualiza dependências do `go.mod` |
+| `make clean` | Remove arquivos binários e temporários    |
 
 ## Arquitetura
 
@@ -61,23 +66,15 @@ A documentação detalhada de pacotes e funções está disponível via Godoc:
 
 ## Configuração
 
-| Variável | Descrição | Tipo | Padrão |
-|---|---|---|---|
-| `GOGITOPS_REPO_URL` | URL do repositório Git alvo | String | Repositório atual |
-| `GOGITOPS_INTERVAL` | Intervalo entre checagens | Duration | `30s` |
-| `GOGITOPS_DB_PATH` | Caminho para o banco SQLite | String | `./deployments.db` |
-| `GOGITOPS_SSH_HOST` | Host ou IP da máquina de deploy | String | - |
-| `GOGITOPS_SSH_USER` | Usuário para conexão SSH | String | - |
-| `GOGITOPS_SSH_KEY_PATH` | Caminho para chave privada SSH | String | - |
-| `GOGITOPS_DISCORD_WEBHOOK` | URL do Webhook do Discord | String | - |
-
-## Roadmap
-
-- [x] **Fase 1**: Arquitetura modular e serviços internos.
-- [x] **Fase 2**: Monitoramento Git e detecção de commits por Hash.
-- [x] **Fase 3**: Execução remota via SSH e Rollback automático.
-- [/] **Fase 4**: Notificações ricas e suporte a Webhooks HTTP (HMAC).
-- [ ] **Fase 5**: Multi-ambiente e autenticação avançada (OIDC).
+| Variável                   | Descrição                       | Tipo     | Padrão             |
+| -------------------------- | ------------------------------- | -------- | ------------------ |
+| `GOGITOPS_REPO_URL`        | URL do repositório Git alvo     | String   | Repositório atual  |
+| `GOGITOPS_INTERVAL`        | Intervalo entre checagens       | Duration | `30s`              |
+| `GOGITOPS_DB_PATH`         | Caminho para o banco SQLite     | String   | `./deployments.db` |
+| `GOGITOPS_SSH_HOST`        | Host ou IP da máquina de deploy | String   | -                  |
+| `GOGITOPS_SSH_USER`        | Usuário para conexão SSH        | String   | -                  |
+| `GOGITOPS_SSH_KEY_PATH`    | Caminho para chave privada SSH  | String   | -                  |
+| `GOGITOPS_DISCORD_WEBHOOK` | URL do Webhook do Discord       | String   | -                  |
 
 ## Contribuindo
 
