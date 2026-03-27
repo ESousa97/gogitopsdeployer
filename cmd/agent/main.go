@@ -1,3 +1,6 @@
+// Package main is the entry point for the gogitopsdeployer agent.
+// It initializes all internal services, sets up the orchestrator,
+// and manages the application's lifecycle, including graceful shutdowns.
 package main
 
 import (
@@ -79,6 +82,8 @@ func main() {
 	fmt.Println("=== GOGITOPSDEPLOYER FINALIZADO ===")
 }
 
+// showHistory queries the [storage.Service] for recent deployment events
+// and prints them in a formatted table to the standard output.
 func showHistory(db *storage.Service) {
 	fmt.Println("=== HISTORICO DE DEPLOYS (Ultimos 10) ===")
 	history, err := db.GetHistory(10)

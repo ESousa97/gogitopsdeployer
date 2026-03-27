@@ -1,3 +1,6 @@
+// Package monitor acts as the core orchestrator for the GitOps agent.
+// It coordinates polling intervals, webhook triggers, repository updates,
+// SSH deployments, and notifications.
 package monitor
 
 import (
@@ -12,7 +15,8 @@ import (
 	"gogitopsdeployer/internal/storage"
 )
 
-// Monitor orquestra o loop de checagem.
+// Monitor coordinates the reconciliation loop between the Git repository
+// and the target deployment environment.
 type Monitor struct {
 	cfg          *config.Config
 	gitOps       *gitops.Service
@@ -22,7 +26,8 @@ type Monitor struct {
 	triggerChan  chan struct{}
 }
 
-// NewMonitor cria uma nova instancia do orquestrador.
+// NewMonitor initializes the [Monitor] with all necessary dependencies
+// and the communication channel for webhook triggers.
 func NewMonitor(cfg *config.Config, gitOps *gitops.Service, sshService *ssh.Service, storage *storage.Service, notification *notification.Service, triggerChan chan struct{}) *Monitor {
 	return &Monitor{
 		cfg:          cfg,
@@ -34,7 +39,9 @@ func NewMonitor(cfg *config.Config, gitOps *gitops.Service, sshService *ssh.Serv
 	}
 }
 
-// Start inicia o loop de monitoramento.
+// Start begins the main monitoring loop. It performs an initial clone
+// and then listens for timer ticks or webhook triggers to execute reconciliation.
+// It respects the provided [context.Context] for graceful shutdown.
 func (m *Monitor) Start(ctx context.Context) error {
 	// Garante o clone inicial
 	if err := m.gitOps.EnsureClone(); err != nil {
@@ -60,7 +67,8 @@ func (m *Monitor) Start(ctx context.Context) error {
 	}
 }
 
-// performCheck executa a verificacao de mudancas e deploy.
+// performCheck executes the core logic: check for updates, pull changes,
+// run SSH commands, and handle rollbacks if necessary.
 func (m *Monitor) performCheck() {
 	changed, hash, err := m.gitOps.CheckForUpdates()
 	if err != nil {

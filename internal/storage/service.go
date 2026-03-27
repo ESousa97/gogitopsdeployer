@@ -1,3 +1,5 @@
+// Package storage provides a persistence layer using SQLite to maintain
+// a history of all deployment attempts and their outcomes.
 package storage
 
 import (
@@ -8,21 +10,27 @@ import (
 	_ "github.com/glebarez/go-sqlite"
 )
 
-// Deployment representa um registro de deploy no banco de dados.
+// Deployment represents a single record of a deployment attempt in the database.
 type Deployment struct {
-	ID        int
-	Hash      string
-	Status    string
-	Output    string
+	// ID is the unique auto-incrementing identifier for the record.
+	ID int
+	// Hash is the Git commit SHA detected for this deployment.
+	Hash string
+	// Status is the result of the operation (success, failed, or rollback).
+	Status string
+	// Output is the combined stdout/stderr from the remote execution.
+	Output string
+	// CreatedAt is the timestamp when the record was inserted.
 	CreatedAt time.Time
 }
 
-// Service gerencia o acesso ao banco de dados SQLite.
+// Service manages the connection pool and SQL operations for the metadata store.
 type Service struct {
 	db *sql.DB
 }
 
-// NewService cria e inicializa o servico de storage.
+// NewService initializes the SQLite database at the specified path,
+// runs internal migrations, and returns a usable [Service] instance.
 func NewService(dbPath string) (*Service, error) {
 	db, err := sql.Open("sqlite", dbPath)
 	if err != nil {
@@ -37,7 +45,7 @@ func NewService(dbPath string) (*Service, error) {
 	return s, nil
 }
 
-// migrate cria as tabelas necessarias se nao existirem.
+// migrate ensures the deployments table exists with the correct schema.
 func (s *Service) migrate() error {
 	query := `
 	CREATE TABLE IF NOT EXISTS deployments (
@@ -51,14 +59,15 @@ func (s *Service) migrate() error {
 	return err
 }
 
-// RecordDeploy registra uma nova tentativa de deploy.
+// RecordDeploy inserts a new deployment event into the database history.
 func (s *Service) RecordDeploy(hash, status, output string) error {
 	query := `INSERT INTO deployments (hash, status, output) VALUES (?, ?, ?)`
 	_, err := s.db.Exec(query, hash, status, output)
 	return err
 }
 
-// GetHistory retorna os ultimos N deploys.
+// GetHistory retrieves the last N deployment records from the database,
+// ordered by their IDs in descending order.
 func (s *Service) GetHistory(limit int) ([]Deployment, error) {
 	query := `SELECT id, hash, status, output, created_at FROM deployments ORDER BY id DESC LIMIT ?`
 	rows, err := s.db.Query(query, limit)
@@ -79,7 +88,7 @@ func (s *Service) GetHistory(limit int) ([]Deployment, error) {
 	return history, nil
 }
 
-// Close fecha a conexao com o banco de dados.
+// Close terminates the underlying database connection.
 func (s *Service) Close() error {
 	return s.db.Close()
 }

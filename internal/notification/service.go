@@ -1,3 +1,5 @@
+// Package notification provides integration with external communication
+// platforms like Discord to broadcast deployment status.
 package notification
 
 import (
@@ -10,32 +12,40 @@ import (
 	"gogitopsdeployer/internal/config"
 )
 
-// Service gerencia o envio de notificacoes.
+// Service handles the dispatching of notifications to external webhooks.
 type Service struct {
 	cfg *config.Config
 }
 
-// NewService cria uma nova instancia do servico de notificacao.
+// NewService creates a new [Service] with the provided [config.Config].
 func NewService(cfg *config.Config) *Service {
 	return &Service{cfg: cfg}
 }
 
-// DiscordPayload representa a estrutura da mensagem para o Discord.
+// DiscordPayload defines the top-level structure for a Discord webhook request,
+// which essentially consists of a list of embeds.
 type DiscordPayload struct {
+	// Embeds is the list of rich cards to display in the Discord message.
 	Embeds []DiscordEmbed `json:"embeds"`
 }
 
-// DiscordEmbed representa um card rico no Discord.
+// DiscordEmbed represents a single rich-content card in a Discord message.
 type DiscordEmbed struct {
-	Title       string `json:"title"`
+	// Title is the main heading of the embed card.
+	Title string `json:"title"`
+	// Description is the body text of the embed, supporting basic markdown.
 	Description string `json:"description"`
-	Color       int    `json:"color"`
-	Footer      struct {
+	// Color is the hexadecimal integer color code for the left side of the embed.
+	Color int `json:"color"`
+	// Footer contains metadata like the timestamp or application name.
+	Footer struct {
 		Text string `json:"text"`
 	} `json:"footer"`
 }
 
-// Notify envia uma notificacao para o Discord informando o status do deploy.
+// Notify sends a formatted alert to Discord based on the deployment status.
+// It maps [config.StatusSuccess], [config.StatusFailed], and [config.StatusRollback]
+// to specific colors and creates an informative embed message.
 func (s *Service) Notify(status, message, hash string) error {
 	if s.cfg.DiscordWebhookURL == "" {
 		return nil // Discord nao configurado

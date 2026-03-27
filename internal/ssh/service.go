@@ -1,3 +1,5 @@
+// Package ssh provides capabilities for remote command execution
+// using the SSH protocol, including support for primary and rollback commands.
 package ssh
 
 import (
@@ -9,17 +11,20 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Service gerencia a execucao de comandos remotos via SSH.
+// Service encapsulates the SSH client logic, handling authentication
+// and command dispatch to the target remote host.
 type Service struct {
 	cfg *config.Config
 }
 
-// NewService cria uma nova instancia do servico SSH.
+// NewService returns a new [Service] initialized with the provided [config.Config].
 func NewService(cfg *config.Config) *Service {
 	return &Service{cfg: cfg}
 }
 
-// RunCommands conecta a VPS e executa a lista de comandos configurada.
+// RunCommands connects to the remote host using the configured SSH credentials
+// and executes the global set of deployment commands sequentially.
+// It returns the combined output of all commands or an error.
 func (s *Service) RunCommands() (string, error) {
 	if s.cfg.SSHHost == "" {
 		return "", nil // SSH nao configurado
@@ -83,7 +88,8 @@ func (s *Service) RunCommands() (string, error) {
 	return combinedOutput, nil
 }
 
-// RunRollback executa o comando de rollback configurado na VPS.
+// RunRollback connects to the remote host and executes the recovery command
+// defined in the configuration (e.g., git checkout HEAD^).
 func (s *Service) RunRollback() (string, error) {
 	if s.cfg.SSHHost == "" || s.cfg.RollbackCommand == "" {
 		return "", nil

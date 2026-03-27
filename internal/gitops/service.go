@@ -1,3 +1,5 @@
+// Package gitops provides a simplified interface for Git operations,
+// specifically for monitoring and Updating repositories.
 package gitops
 
 import (
@@ -10,17 +12,19 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 )
 
-// Service gerencia as operacoes Git.
+// Service manages the Git repository lifecycle and version detection.
+// It wraps the go-git library to provide high-level operations.
 type Service struct {
 	cfg *config.Config
 }
 
-// NewService cria uma nova instancia do servico GitOps.
+// NewService initializes a new [Service] with the provided [config.Config].
 func NewService(cfg *config.Config) *Service {
 	return &Service{cfg: cfg}
 }
 
-// EnsureClone garante que o repositorio esta clonado no disco.
+// EnsureClone checks if the repository exists locally at the configured path
+// and performs a clone if it is missing.
 func (s *Service) EnsureClone() error {
 	_, err := git.PlainOpen(s.cfg.LocalPath)
 	if err == nil {
@@ -39,7 +43,9 @@ func (s *Service) EnsureClone() error {
 	return err
 }
 
-// CheckForUpdates verifica se ha novos commits no remoto.
+// CheckForUpdates fetches the latest references from the remote (origin)
+// and compares the local HEAD with the remote target branch (master/main).
+// It returns true and the new hash if an update is detected.
 func (s *Service) CheckForUpdates() (bool, string, error) {
 	repo, err := git.PlainOpen(s.cfg.LocalPath)
 	if err != nil {
@@ -83,7 +89,8 @@ func (s *Service) CheckForUpdates() (bool, string, error) {
 	return false, currentHash, nil
 }
 
-// UpdateLocal atualiza o repositorio local para o hash detectado.
+// UpdateLocal performs a pull operation to synchronize the local repository
+// with the latest changes from the remote tracking branch.
 func (s *Service) UpdateLocal() error {
 	repo, err := git.PlainOpen(s.cfg.LocalPath)
 	if err != nil {

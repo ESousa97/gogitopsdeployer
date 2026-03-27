@@ -1,3 +1,5 @@
+// Package webhook provides an HTTP server to receive and validate
+// push event notifications from GitHub.
 package webhook
 
 import (
@@ -12,13 +14,15 @@ import (
 	"gogitopsdeployer/internal/config"
 )
 
-// Service gerencia o recebimento de webhooks do GitHub.
+// Service implements an HTTP handler that listens for inbound repository
+// notifications, validates their signatures, and triggers the monitor.
 type Service struct {
 	cfg         *config.Config
 	triggerChan chan struct{}
 }
 
-// NewService cria uma nova instancia do servico de Webhook.
+// NewService initializes a new [Service] with the required [config.Config]
+// and a shared channel to signal updates to the orchestrator.
 func NewService(cfg *config.Config, triggerChan chan struct{}) *Service {
 	return &Service{
 		cfg:         cfg,
@@ -26,13 +30,17 @@ func NewService(cfg *config.Config, triggerChan chan struct{}) *Service {
 	}
 }
 
-// Start inicia o servidor HTTP para escutar webhooks.
+// Start launches the HTTP server and blocks until it is shut down.
+// It exposes the /webhook endpoint on the configured [config.WebhookPort].
 func (s *Service) Start() error {
 	http.HandleFunc("/webhook", s.handleWebhook)
 	fmt.Printf("[Webhook] Servidor escutando na porta %s...\n", s.cfg.WebhookPort)
 	return http.ListenAndServe(":"+s.cfg.WebhookPort, nil)
 }
 
+// handleWebhook processes the HTTP POST request, validates the HMAC-SHA256
+// signature (if a secret is configured), checks for push/ping events,
+// and sends a non-blocking signal to the monitor channel.
 func (s *Service) handleWebhook(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -82,6 +90,8 @@ func (s *Service) handleWebhook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
+// validateSignature performs a cryptographic comparison between the
+// payload's HMAC and the signature provided in the header.
 func (s *Service) validateSignature(payload []byte, signature string) bool {
 	if !strings.HasPrefix(signature, "sha256=") {
 		return false

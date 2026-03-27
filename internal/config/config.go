@@ -1,3 +1,5 @@
+// Package config provides typed configuration management for the GitOps agent,
+// using environment variables as the source of truth.
 package config
 
 import (
@@ -6,37 +8,58 @@ import (
 	"time"
 )
 
-// Config define a estrutura de configuracao do agente GitOps.
+// Config defines the configuration structure for the GitOps agent.
+// It includes settings for Git, SSH, notifications, and storage.
 type Config struct {
-	RepoURL   string
-	Interval  time.Duration
+	// RepoURL is the URL of the remote Git repository to monitor.
+	RepoURL string
+	// Interval defines how often the agent checks for new commits.
+	Interval time.Duration
+	// LocalPath is the directory where the repository is cloned for analysis.
 	LocalPath string
 
 	// Database Settings
+
+	// DBPath is the file path to the SQLite deployment history database.
 	DBPath string
 
 	// Notification Settings
+
+	// DiscordWebhookURL is the endpoint for sending deployment alerts.
 	DiscordWebhookURL string
 
 	// Webhook Settings
-	WebhookPort   string
+
+	// WebhookPort is the HTTP port for the inbound webhook server.
+	WebhookPort string
+	// WebhookSecret is the HMAC key for validating GitHub webhook payloads.
 	WebhookSecret string
 
 	// SSH Settings
-	SSHHost         string
-	SSHUser         string
-	SSHKeyPath      string
-	SSHCommands     []string
+
+	// SSHHost is the target machine address for deployments.
+	SSHHost string
+	// SSHUser is the username for the SSH connection.
+	SSHUser string
+	// SSHKeyPath is the absolute path to the private SSH key.
+	SSHKeyPath string
+	// SSHCommands is a list of commands to execute on a successful commit detection.
+	SSHCommands []string
+	// RollbackCommand is the command executed if the primary deployment fails.
 	RollbackCommand string
 }
 
 const (
-	StatusSuccess  = "success"
-	StatusFailed   = "failed"
+	// StatusSuccess represents a successfully completed deployment.
+	StatusSuccess = "success"
+	// StatusFailed represents a deployment that encountered an error.
+	StatusFailed = "failed"
+	// StatusRollback represents a state where the system was reverted to a previous version.
 	StatusRollback = "rollback"
 )
 
-// LoadConfig carrega as configuracoes do ambiente ou usa valores default.
+// LoadConfig retrieves configuration from environment variables or applies default values.
+// It returns a pointer to [Config] or an error if validation fails.
 func LoadConfig() (*Config, error) {
 	repoURL := getEnv("GOGITOPS_REPO_URL", "https://github.com/ESousa97/gogitopsdeployer")
 
@@ -91,7 +114,8 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-// Validate garante que a configuracao e valida antes da inicializacao.
+// Validate ensures that the [Config] structure contains all required fields
+// and valid values before starting the services.
 func (c *Config) Validate() error {
 	if c.RepoURL == "" {
 		return errors.New("REPO_URL cannot be empty")
