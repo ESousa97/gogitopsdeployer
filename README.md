@@ -1,13 +1,19 @@
-# gogitopsdeployer
+<div align="center">
+  <h1>Go GitOps Deployer</h1>
+  <p>A lightweight, modular GitOps agent for automated repository monitoring and remote deployment via SSH.</p>
 
-> A lightweight, modular GitOps agent for automated repository monitoring and remote deployment via SSH.
+  <img src="assets/github-go.png" alt="Go GitOps Deployer Banner" width="600px">
 
-![CI](https://github.com/ESousa97/gogitopsdeployer/actions/workflows/ci.yml/badge.svg?branch=master)
-[![Go Report Card](https://goreportcard.com/badge/github.com/ESousa97/gogitopsdeployer)](https://goreportcard.com/report/github.com/ESousa97/gogitopsdeployer)
-[![Go Reference](https://pkg.go.dev/badge/github.com/ESousa97/gogitopsdeployer.svg)](https://pkg.go.dev/github.com/ESousa97/gogitopsdeployer)
-![License](https://img.shields.io/github/license/ESousa97/gogitopsdeployer)
-![Go Version](https://img.shields.io/github/go-mod/go-version/ESousa97/gogitopsdeployer)
-![Last Commit](https://img.shields.io/github/last-commit/ESousa97/gogitopsdeployer)
+  <br>
+
+  ![CI](https://github.com/ESousa97/gogitopsdeployer/actions/workflows/ci.yml/badge.svg)
+  [![Go Report Card](https://goreportcard.com/badge/github.com/ESousa97/gogitopsdeployer?v=2)](https://goreportcard.com/report/github.com/ESousa97/gogitopsdeployer)
+  [![CodeFactor](https://www.codefactor.io/repository/github/ESousa97/gogitopsdeployer/badge)](https://www.codefactor.io/repository/github/ESousa97/gogitopsdeployer)
+  ![Go Reference](https://pkg.go.dev/badge/github.com/ESousa97/gogitopsdeployer.svg)
+  ![License](https://img.shields.io/github/license/ESousa97/gogitopsdeployer)
+  ![Go Version](https://img.shields.io/github/go-mod/go-version/ESousa97/gogitopsdeployer)
+  ![Last Commit](https://img.shields.io/github/last-commit/ESousa97/gogitopsdeployer)
+</div>
 
 ---
 
@@ -86,6 +92,20 @@ See how to contribute in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 This project is licensed under the [MIT License](LICENSE).
 
+<div align="center">
+
 ## Author
 
-**Enoque Sousa** — [Portfolio](https://enoquesousa.vercel.app) | [GitHub](https://github.com/ESousa97)
+**Enoque Sousa**
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/enoque-sousa-bb89aa168/)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white)](https://github.com/ESousa97)
+[![Portfolio](https://img.shields.io/badge/Portfolio-FF5722?style=flat&logo=target&logoColor=white)](https://enoquesousa.vercel.app)
+
+**[⬆ Back to top](#go-gitops-deployer)**
+
+Made with ❤️ by [Enoque Sousa](https://github.com/ESousa97)
+
+**Project Status:** Active Development
+
+</div>
