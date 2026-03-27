@@ -6,13 +6,13 @@
 
   <br>
 
-  ![CI](https://github.com/ESousa97/gogitopsdeployer/actions/workflows/ci.yml/badge.svg)
-  [![Go Report Card](https://goreportcard.com/badge/github.com/ESousa97/gogitopsdeployer?v=2)](https://goreportcard.com/report/github.com/ESousa97/gogitopsdeployer)
-  [![CodeFactor](https://www.codefactor.io/repository/github/ESousa97/gogitopsdeployer/badge)](https://www.codefactor.io/repository/github/ESousa97/gogitopsdeployer)
-  ![Go Reference](https://pkg.go.dev/badge/github.com/ESousa97/gogitopsdeployer.svg)
-  ![License](https://img.shields.io/github/license/ESousa97/gogitopsdeployer)
-  ![Go Version](https://img.shields.io/github/go-mod/go-version/ESousa97/gogitopsdeployer)
-  ![Last Commit](https://img.shields.io/github/last-commit/ESousa97/gogitopsdeployer)
+  ![CI](https://github.com/esousa97/gogitopsdeployer/actions/workflows/ci.yml/badge.svg)
+  [![Go Report Card](https://goreportcard.com/badge/github.com/esousa97/gogitopsdeployer?v=2)](https://goreportcard.com/report/github.com/esousa97/gogitopsdeployer)
+  [![CodeFactor](https://www.codefactor.io/repository/github/esousa97/gogitopsdeployer/badge)](https://www.codefactor.io/repository/github/esousa97/gogitopsdeployer)
+  ![Go Reference](https://pkg.go.dev/badge/github.com/esousa97/gogitopsdeployer.svg)
+  ![License](https://img.shields.io/github/license/esousa97/gogitopsdeployer)
+  ![Go Version](https://img.shields.io/github/go-mod/go-version/esousa97/gogitopsdeployer)
+  ![Last Commit](https://img.shields.io/github/last-commit/esousa97/gogitopsdeployer)
 </div>
 
 ---
@@ -33,13 +33,13 @@
 
 ```bash
 # Via go install
-go install github.com/ESousa97/gogitopsdeployer/cmd/agent@latest
+go install github.com/esousa97/gogitopsdeployer/cmd/agent@latest
 ```
 
 ### From source
 
 ```bash
-git clone https://github.com/ESousa97/gogitopsdeployer.git
+git clone https://github.com/esousa97/gogitopsdeployer.git
 cd gogitopsdeployer
 make build
 ```
@@ -70,7 +70,7 @@ The project follows **Dependency Inversion** and **Modular Architecture** princi
 ## API Reference
 
 Detailed package and function documentation is available via Godoc:
-"Check the full documentation at [pkg.go.dev](https://pkg.go.dev/github.com/ESousa97/gogitopsdeployer)."
+"Check the full documentation at [pkg.go.dev](https://pkg.go.dev/github.com/esousa97/gogitopsdeployer)."
 
 ## Configuration
 

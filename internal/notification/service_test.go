@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ESousa97/gogitopsdeployer/internal/config"
+	"github.com/esousa97/gogitopsdeployer/internal/config"
 )
 
 func TestNotify(t *testing.T) {

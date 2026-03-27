@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ESousa97/gogitopsdeployer/internal/config"
-	"github.com/ESousa97/gogitopsdeployer/internal/gitops"
-	"github.com/ESousa97/gogitopsdeployer/internal/notification"
-	"github.com/ESousa97/gogitopsdeployer/internal/ssh"
-	"github.com/ESousa97/gogitopsdeployer/internal/storage"
+	"github.com/esousa97/gogitopsdeployer/internal/config"
+	"github.com/esousa97/gogitopsdeployer/internal/gitops"
+	"github.com/esousa97/gogitopsdeployer/internal/notification"
+	"github.com/esousa97/gogitopsdeployer/internal/ssh"
+	"github.com/esousa97/gogitopsdeployer/internal/storage"
 )
 
 // Monitor coordinates the reconciliation loop between the Git repository

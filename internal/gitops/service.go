@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ESousa97/gogitopsdeployer/internal/config"
+	"github.com/esousa97/gogitopsdeployer/internal/config"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"

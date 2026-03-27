@@ -61,7 +61,7 @@ const (
 // LoadConfig retrieves configuration from environment variables or applies default values.
 // It returns a pointer to [Config] or an error if validation fails.
 func LoadConfig() (*Config, error) {
-	repoURL := getEnv("GOGITOPS_REPO_URL", "https://github.com/ESousa97/gogitopsdeployer")
+	repoURL := getEnv("GOGITOPS_REPO_URL", "https://github.com/esousa97/gogitopsdeployer")
 
 	intervalStr := os.Getenv("GOGITOPS_INTERVAL")
 	interval := 30 * time.Second
