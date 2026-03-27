@@ -15,6 +15,10 @@ type Config struct {
 	// Database Settings
 	DBPath string
 
+	// Webhook Settings
+	WebhookPort   string
+	WebhookSecret string
+
 	// SSH Settings
 	SSHHost     string
 	SSHUser     string
@@ -37,20 +41,25 @@ func LoadConfig() (*Config, error) {
 	localPath := getEnv("GOGITOPS_LOCAL_PATH", "./repo-cache")
 	dbPath := getEnv("GOGITOPS_DB_PATH", "./deployments.db")
 
+	webhookPort := getEnv("GOGITOPS_WEBHOOK_PORT", "8080")
+	webhookSecret := os.Getenv("GOGITOPS_WEBHOOK_SECRET")
+
 	sshHost := os.Getenv("GOGITOPS_SSH_HOST")
 	sshUser := os.Getenv("GOGITOPS_SSH_USER")
 	sshKeyPath := os.Getenv("GOGITOPS_SSH_KEY_PATH")
 	sshCommandsStr := getEnv("GOGITOPS_SSH_COMMANDS", "cd /app && git pull && docker-compose up --build -d")
 
 	cfg := &Config{
-		RepoURL:     repoURL,
-		Interval:    interval,
-		LocalPath:   localPath,
-		DBPath:      dbPath,
-		SSHHost:     sshHost,
-		SSHUser:     sshUser,
-		SSHKeyPath:  sshKeyPath,
-		SSHCommands: []string{sshCommandsStr}, // Por enquanto um comando composto
+		RepoURL:       repoURL,
+		Interval:      interval,
+		LocalPath:     localPath,
+		DBPath:        dbPath,
+		WebhookPort:   webhookPort,
+		WebhookSecret: webhookSecret,
+		SSHHost:       sshHost,
+		SSHUser:       sshUser,
+		SSHKeyPath:    sshKeyPath,
+		SSHCommands:   []string{sshCommandsStr}, // Por enquanto um comando composto
 	}
 
 	if err := cfg.Validate(); err != nil {

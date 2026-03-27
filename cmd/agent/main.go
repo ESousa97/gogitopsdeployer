@@ -13,6 +13,7 @@ import (
 	"gogitopsdeployer/internal/monitor"
 	"gogitopsdeployer/internal/ssh"
 	"gogitopsdeployer/internal/storage"
+	"gogitopsdeployer/internal/webhook"
 )
 
 func main() {
@@ -37,12 +38,23 @@ func main() {
 
 	fmt.Println("=== GOGITOPSDEPLOYER INICIANDO ===")
 
-	// 4. Inicializa Servicos (Inversao de Dependencia - P1 Antigravity)
+	// 4. Inicializa Canais de Comunicacao
+	triggerChan := make(chan struct{}, 1)
+
+	// 5. Inicializa Servicos (Inversao de Dependencia - P1 Antigravity)
 	gitOps := gitops.NewService(cfg)
 	sshService := ssh.NewService(cfg)
-	agent := monitor.NewMonitor(cfg, gitOps, sshService, db)
+	agent := monitor.NewMonitor(cfg, gitOps, sshService, db, triggerChan)
+	webhookSvc := webhook.NewService(cfg, triggerChan)
 
-	// 5. Setup de Context para Shutdown Gracioso
+	// 6. Roda o Servidor Webhook em Background
+	go func() {
+		if err := webhookSvc.Start(); err != nil {
+			log.Printf("Erro no servidor Webhook: %v\n", err)
+		}
+	}()
+
+	// 7. Setup de Context para Shutdown Gracioso
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
