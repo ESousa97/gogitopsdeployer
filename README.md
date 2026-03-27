@@ -2,7 +2,7 @@
 
 > A lightweight, modular GitOps agent for automated repository monitoring and remote deployment via SSH.
 
-![CI](https://github.com/ESousa97/gogitopsdeployer/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/ESousa97/gogitopsdeployer/actions/workflows/ci.yml/badge.svg?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ESousa97/gogitopsdeployer)](https://goreportcard.com/report/github.com/ESousa97/gogitopsdeployer)
 [![Go Reference](https://pkg.go.dev/badge/github.com/ESousa97/gogitopsdeployer.svg)](https://pkg.go.dev/github.com/ESousa97/gogitopsdeployer)
 ![License](https://img.shields.io/github/license/ESousa97/gogitopsdeployer)
@@ -30,7 +30,7 @@
 go install github.com/ESousa97/gogitopsdeployer/cmd/agent@latest
 ```
 
-# From source
+### From source
 
 ```bash
 git clone https://github.com/ESousa97/gogitopsdeployer.git
@@ -40,50 +40,52 @@ make build
 
 ## Makefile Targets
 
-| Target       | Descrição                                 |
+| Target       | Description                               |
 | ------------ | ----------------------------------------- |
-| `make build` | Compila o binário do agente em `bin/`     |
-| `make run`   | Executa o agente diretamente via Go       |
-| `make test`  | Executa a suíte de testes unitários       |
-| `make lint`  | Executa análise estática via `go vet`     |
-| `make tidy`  | Limpa e atualiza dependências do `go.mod` |
-| `make clean` | Remove arquivos binários e temporários    |
+| `make build` | Compiles the agent binary in `bin/`       |
+| `make run`   | Executes the agent directly via Go        |
+| `make test`  | Runs the unit test suite                  |
+| `make lint`  | Performs static analysis via `go vet`     |
+| `make tidy`  | Cleans and updates `go.mod` dependencies  |
+| `make clean` | Removes binary and temporary files        |
 
-## Arquitetura
+## Architecture
 
-O projeto segue princípios de **Inversão de Dependência** e **Arquitetura Modular**, garantindo que o núcleo de negócio seja agnóstico a infraestrutura.
+The project follows **Dependency Inversion** and **Modular Architecture** principles, ensuring that the business core remains infrastructure-agnostic.
 
-- `cmd/agent`: Ponto de entrada e comandos CLI.
-- `internal/gitops`: Abstração de operações Git e detecção de commits.
-- `internal/ssh`: Motor de execução remota e lógica de rollback.
-- `internal/monitor`: Orquestrador resiliente do loop de reconciliação.
-- `internal/storage`: Camada de persistência SQLite.
+- `cmd/agent`: Entry point and CLI commands.
+- `internal/gitops`: Abstraction for Git operations and commit detection.
+- `internal/ssh`: Remote execution engine and rollback logic.
+- `internal/monitor`: Resilient reconciliation loop orchestrator.
+- `internal/storage`: SQLite persistence layer.
+- `internal/notification`: Discord notification integration.
+- `internal/webhook`: GitHub Push event receiver.
 
 ## API Reference
 
-A documentação detalhada de pacotes e funções está disponível via Godoc:
-"Veja a documentação completa em [pkg.go.dev](https://pkg.go.dev/github.com/ESousa97/gogitopsdeployer)."
+Detailed package and function documentation is available via Godoc:
+"Check the full documentation at [pkg.go.dev](https://pkg.go.dev/github.com/ESousa97/gogitopsdeployer)."
 
-## Configuração
+## Configuration
 
-| Variável                   | Descrição                       | Tipo     | Padrão             |
+| Variable                   | Description                       | Type     | Default            |
 | -------------------------- | ------------------------------- | -------- | ------------------ |
-| `GOGITOPS_REPO_URL`        | URL do repositório Git alvo     | String   | Repositório atual  |
-| `GOGITOPS_INTERVAL`        | Intervalo entre checagens       | Duration | `30s`              |
-| `GOGITOPS_DB_PATH`         | Caminho para o banco SQLite     | String   | `./deployments.db` |
-| `GOGITOPS_SSH_HOST`        | Host ou IP da máquina de deploy | String   | -                  |
-| `GOGITOPS_SSH_USER`        | Usuário para conexão SSH        | String   | -                  |
-| `GOGITOPS_SSH_KEY_PATH`    | Caminho para chave privada SSH  | String   | -                  |
-| `GOGITOPS_DISCORD_WEBHOOK` | URL do Webhook do Discord       | String   | -                  |
+| `GOGITOPS_REPO_URL`        | Target Git repository URL       | String   | Current repo       |
+| `GOGITOPS_INTERVAL`        | Check interval duration         | Duration | `30s`              |
+| `GOGITOPS_DB_PATH`         | Path to SQLite database         | String   | `./deployments.db` |
+| `GOGITOPS_SSH_HOST`        | Deployment machine Host or IP   | String   | -                  |
+| `GOGITOPS_SSH_USER`        | SSH connection username         | String   | -                  |
+| `GOGITOPS_SSH_KEY_PATH`    | Path to private SSH key         | String   | -                  |
+| `GOGITOPS_DISCORD_WEBHOOK` | Discord Webhook URL             | String   | -                  |
 
-## Contribuindo
+## Contributing
 
-Veja como contribuir em [CONTRIBUTING.md](CONTRIBUTING.md).
+See how to contribute in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Licença
+## License
 
-Este projeto está licenciado sob a [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
 
-## Autor
+## Author
 
-**Enoque Sousa** — [Portfólio](https://enoquesousa.vercel.app) | [GitHub](https://github.com/ESousa97)
+**Enoque Sousa** — [Portfolio](https://enoquesousa.vercel.app) | [GitHub](https://github.com/ESousa97)
