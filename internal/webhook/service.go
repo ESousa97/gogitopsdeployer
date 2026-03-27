@@ -79,7 +79,7 @@ func (s *Service) handleWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println("[Webhook] Push detected! Triggering immediate deployment...")
-	
+
 	// Send signal to monitor (non-blocking)
 	select {
 	case s.triggerChan <- struct{}{}:

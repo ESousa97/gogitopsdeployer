@@ -43,7 +43,7 @@ func NewMonitor(cfg *config.Config, gitOps *gitops.Service, sshService *ssh.Serv
 // and then listens for timer ticks or webhook triggers to execute reconciliation.
 // It respects the provided [context.Context] for graceful shutdown.
 func (m *Monitor) Start(ctx context.Context) error {
-	// Garante o clone inicial
+	// Ensure initial clone
 	if err := m.gitOps.EnsureClone(); err != nil {
 		return fmt.Errorf("initial clone failure: %v", err)
 	}
@@ -51,15 +51,15 @@ func (m *Monitor) Start(ctx context.Context) error {
 	ticker := time.NewTicker(m.cfg.Interval)
 	defer ticker.Stop()
 
-	fmt.Printf("Monitor iniciado. Polling a cada %s. Webhook ativo na porta %s.\n", m.cfg.Interval, m.cfg.WebhookPort)
+	fmt.Printf("Monitor started. Polling every %s. Webhook active on port %s.\n", m.cfg.Interval, m.cfg.WebhookPort)
 
 	for {
 		select {
 		case <-ctx.Done():
-			fmt.Println("Monitor finalizando...")
+			fmt.Println("Monitor shutting down...")
 			return nil
 		case <-m.triggerChan:
-			fmt.Println("[Monitor] Trigger de Webhook recebido!")
+			fmt.Println("[Monitor] Webhook trigger received!")
 			m.performCheck()
 		case <-ticker.C:
 			m.performCheck()
@@ -72,53 +72,53 @@ func (m *Monitor) Start(ctx context.Context) error {
 func (m *Monitor) performCheck() {
 	changed, hash, err := m.gitOps.CheckForUpdates()
 	if err != nil {
-		fmt.Printf("Erro ao verificar atualizacoes: %v\n", err)
+		fmt.Printf("Error checking for updates: %v\n", err)
 		return
 	}
 
 	if changed {
-		fmt.Printf("Nova versao detectada: [%s]\n", hash)
-		
-		// 1. Baixar as mudancas localmente
+		fmt.Printf("New version detected: [%s]\n", hash)
+
+		// 1. Pull changes locally
 		if err := m.gitOps.UpdateLocal(); err != nil {
-			fmt.Printf("Erro ao baixar mudancas: %v\n", err)
+			fmt.Printf("Error pulling changes: %v\n", err)
 			return
 		}
 
-		// 2. Disparar comandos SSH na VPS (se configurado)
+		// 2. Trigger SSH commands on VPS (if configured)
 		if m.cfg.SSHHost != "" {
 			output, err := m.sshService.RunCommands()
 			if err != nil {
 				fmt.Printf("[Monitor] Deploy FAILED: %v\n", err)
-				
-				// Persiste Falha
+
+				// Record failure
 				m.storage.RecordDeploy(hash, config.StatusFailed, output)
-				
-				// Notifica Discord (Falha)
+
+				// Notify Discord (Failure)
 				m.notification.Notify(config.StatusFailed, "Deploy failed. Initiating auto-rollback...", hash)
 
 				// 3. AUTO-ROLLBACK
-				fmt.Println("[Monitor] Executando Rollback de emergencia...")
+				fmt.Println("[Monitor] Executing emergency rollback...")
 				rbOutput, rbErr := m.sshService.RunRollback()
 				if rbErr != nil {
 					fmt.Printf("[Monitor] ROLLBACK FAILED: %v\n", rbErr)
 					m.notification.Notify(config.StatusFailed, fmt.Sprintf("CRITICAL: Rollback also failed!\n%s", rbOutput), hash)
 				} else {
-					fmt.Println("[Monitor] Rollback executado com sucesso.")
+					fmt.Println("[Monitor] Rollback executed successfully.")
 					m.storage.RecordDeploy(hash, config.StatusRollback, rbOutput)
 					m.notification.Notify(config.StatusRollback, "System restored to previous stable version.", hash)
 				}
 				return
 			}
-			
-			// 4. Sucesso
-			fmt.Println("[Monitor] Deploy finalizado com sucesso.")
+
+			// 4. Success
+			fmt.Println("[Monitor] Deployment finished successfully.")
 			m.storage.RecordDeploy(hash, config.StatusSuccess, output)
 			m.notification.Notify(config.StatusSuccess, "Deploy successful.", hash)
 		}
 	} else {
-		// Log discreto para estudo
-		fmt.Printf("[%s] Nenhuma mudanca detectada (HEAD: %s)\n", 
+		// Discrete log for analysis
+		fmt.Printf("[%s] No changes detected (HEAD: %s)\n",
 			time.Now().Format("15:04:05"), hash[:8])
 	}
 }

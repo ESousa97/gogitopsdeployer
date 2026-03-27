@@ -103,7 +103,7 @@ func showHistory(db *storage.Service) {
 		if len(hashShort) > 8 {
 			hashShort = hashShort[:8]
 		}
-		fmt.Printf("%-5d | %-8s | %-10s | %-20s\n", 
+		fmt.Printf("%-5d | %-8s | %-10s | %-20s\n",
 			d.ID, hashShort, d.Status, d.CreatedAt.Format("2006-01-02 15:04:05"))
 	}
 }

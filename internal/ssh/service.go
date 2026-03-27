@@ -64,7 +64,7 @@ func (s *Service) RunCommands() (string, error) {
 	// 4. Run commands
 	for _, cmd := range s.cfg.SSHCommands {
 		fmt.Printf("[SSH] Executing: %s\n", cmd)
-		
+
 		session, err := client.NewSession()
 		if err != nil {
 			return combinedOutput, fmt.Errorf("failed to create session: %v", err)
@@ -72,7 +72,7 @@ func (s *Service) RunCommands() (string, error) {
 
 		output, err := session.CombinedOutput(cmd)
 		combinedOutput += string(output) + "\n"
-		
+
 		if err != nil {
 			fmt.Printf("[SSH] Command error: %v\n", err)
 			fmt.Printf("[SSH] Error Output:\n%s\n", string(output))
@@ -109,8 +109,8 @@ func (s *Service) RunRollback() (string, error) {
 	}
 
 	config := &ssh.ClientConfig{
-		User: s.cfg.SSHUser,
-		Auth: []ssh.AuthMethod{ssh.PublicKeys(signer)},
+		User:            s.cfg.SSHUser,
+		Auth:            []ssh.AuthMethod{ssh.PublicKeys(signer)},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
