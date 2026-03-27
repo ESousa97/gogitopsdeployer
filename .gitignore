@@ -1,0 +1,21 @@
+# Binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Project specific
+repo-cache/
+logs/
+
+# Go dependency and tool flags
+go.sum
+vendor/
+
+# IDEs and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
