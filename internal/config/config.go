@@ -12,6 +12,9 @@ type Config struct {
 	Interval  time.Duration
 	LocalPath string
 
+	// Database Settings
+	DBPath string
+
 	// SSH Settings
 	SSHHost     string
 	SSHUser     string
@@ -32,6 +35,7 @@ func LoadConfig() (*Config, error) {
 	}
 
 	localPath := getEnv("GOGITOPS_LOCAL_PATH", "./repo-cache")
+	dbPath := getEnv("GOGITOPS_DB_PATH", "./deployments.db")
 
 	sshHost := os.Getenv("GOGITOPS_SSH_HOST")
 	sshUser := os.Getenv("GOGITOPS_SSH_USER")
@@ -42,6 +46,7 @@ func LoadConfig() (*Config, error) {
 		RepoURL:     repoURL,
 		Interval:    interval,
 		LocalPath:   localPath,
+		DBPath:      dbPath,
 		SSHHost:     sshHost,
 		SSHUser:     sshUser,
 		SSHKeyPath:  sshKeyPath,

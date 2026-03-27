@@ -20,9 +20,9 @@ func NewService(cfg *config.Config) *Service {
 }
 
 // RunCommands conecta a VPS e executa a lista de comandos configurada.
-func (s *Service) RunCommands() error {
+func (s *Service) RunCommands() (string, error) {
 	if s.cfg.SSHHost == "" {
-		return nil // SSH nao configurado
+		return "", nil // SSH nao configurado
 	}
 
 	fmt.Printf("[SSH] Conectando a %s@%s...\n", s.cfg.SSHUser, s.cfg.SSHHost)
@@ -30,12 +30,12 @@ func (s *Service) RunCommands() error {
 	// 1. Carrega a chave privada
 	key, err := os.ReadFile(s.cfg.SSHKeyPath)
 	if err != nil {
-		return fmt.Errorf("unable to read private key: %v", err)
+		return "", fmt.Errorf("unable to read private key: %v", err)
 	}
 
 	signer, err := ssh.ParsePrivateKey(key)
 	if err != nil {
-		return fmt.Errorf("unable to parse private key: %v", err)
+		return "", fmt.Errorf("unable to parse private key: %v", err)
 	}
 
 	// 2. Configura o cliente
@@ -50,9 +50,11 @@ func (s *Service) RunCommands() error {
 	// 3. Conecta ao host
 	client, err := ssh.Dial("tcp", s.cfg.SSHHost+":22", config)
 	if err != nil {
-		return fmt.Errorf("failed to dial: %v", err)
+		return "", fmt.Errorf("failed to dial: %v", err)
 	}
 	defer client.Close()
+
+	var combinedOutput string
 
 	// 4. Executa os comandos
 	for _, cmd := range s.cfg.SSHCommands {
@@ -60,15 +62,17 @@ func (s *Service) RunCommands() error {
 		
 		session, err := client.NewSession()
 		if err != nil {
-			return fmt.Errorf("failed to create session: %v", err)
+			return combinedOutput, fmt.Errorf("failed to create session: %v", err)
 		}
 
 		output, err := session.CombinedOutput(cmd)
+		combinedOutput += string(output) + "\n"
+		
 		if err != nil {
 			fmt.Printf("[SSH] Erro no comando: %v\n", err)
 			fmt.Printf("[SSH] Output de Erro:\n%s\n", string(output))
 			session.Close()
-			return err
+			return combinedOutput, err
 		}
 
 		fmt.Printf("[SSH] Output:\n%s\n", string(output))
@@ -76,5 +80,5 @@ func (s *Service) RunCommands() error {
 	}
 
 	fmt.Println("[SSH] Todos os comandos executados com sucesso.")
-	return nil
+	return combinedOutput, nil
 }

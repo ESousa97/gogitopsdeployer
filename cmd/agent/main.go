@@ -12,23 +12,37 @@ import (
 	"gogitopsdeployer/internal/gitops"
 	"gogitopsdeployer/internal/monitor"
 	"gogitopsdeployer/internal/ssh"
+	"gogitopsdeployer/internal/storage"
 )
 
 func main() {
-	fmt.Println("=== GOGITOPSDEPLOYER INICIANDO ===")
-
 	// 1. Carrega Configuracoes (Config Tipada - P3 Antigravity)
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Erro ao carregar configuracoes: %v", err)
 	}
 
-	// 2. Inicializa Servicos (Inversao de Dependencia - P1 Antigravity)
+	// 2. Inicializa Storage (SQLite)
+	db, err := storage.NewService(cfg.DBPath)
+	if err != nil {
+		log.Fatalf("Erro ao inicializar banco de dados: %v", err)
+	}
+	defer db.Close()
+
+	// 3. Verifica Subcomandos
+	if len(os.Args) > 1 && os.Args[1] == "history" {
+		showHistory(db)
+		return
+	}
+
+	fmt.Println("=== GOGITOPSDEPLOYER INICIANDO ===")
+
+	// 4. Inicializa Servicos (Inversao de Dependencia - P1 Antigravity)
 	gitOps := gitops.NewService(cfg)
 	sshService := ssh.NewService(cfg)
-	agent := monitor.NewMonitor(cfg, gitOps, sshService)
+	agent := monitor.NewMonitor(cfg, gitOps, sshService, db)
 
-	// 3. Setup de Context para Shutdown Gracioso
+	// 5. Setup de Context para Shutdown Gracioso
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -49,4 +63,28 @@ func main() {
 	}
 
 	fmt.Println("=== GOGITOPSDEPLOYER FINALIZADO ===")
+}
+
+func showHistory(db *storage.Service) {
+	fmt.Println("=== HISTORICO DE DEPLOYS (Ultimos 10) ===")
+	history, err := db.GetHistory(10)
+	if err != nil {
+		log.Fatalf("Erro ao buscar historico: %v", err)
+	}
+
+	if len(history) == 0 {
+		fmt.Println("Nenhum deploy registrado ainda.")
+		return
+	}
+
+	fmt.Printf("%-5s | %-8s | %-10s | %-20s\n", "ID", "HASH", "STATUS", "DATA")
+	fmt.Println("------------------------------------------------------------")
+	for _, d := range history {
+		hashShort := d.Hash
+		if len(hashShort) > 8 {
+			hashShort = hashShort[:8]
+		}
+		fmt.Printf("%-5d | %-8s | %-10s | %-20s\n", 
+			d.ID, hashShort, d.Status, d.CreatedAt.Format("2006-01-02 15:04:05"))
+	}
 }

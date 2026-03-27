@@ -6,13 +6,16 @@ Agente GitOps escrito em Go para monitoramento de repositorios e deteccao automa
 - **Monitoramento Continuo**: Verifica alteracoes no branch principal (`master`/`main`) a cada 30 segundos.
 - **Deteccao por Hash**: Compara o `HEAD` local com o remoto via biblioteca `go-git`.
 - **Deploy Remoto (SSH)**: Executa comandos em uma VPS via SSH ao detectar novos commits.
+- **Persistencia (SQLite)**: Registra cada tentativa de deploy (sucesso/falha) em um banco de dados local.
+- **CLI History**: Subcomando para visualizar o historico de deploys.
 - **Arquitetura Modular**: Segue os principios de Domain-Driven Design (DDD) e Inversao de Dependencia.
 
 ## Estrutura do Projeto
-- `cmd/agent`: Ponto de entrada (Main).
+- `cmd/agent`: Ponto de entrada (Main) e subcomandos CLI.
 - `internal/config`: Configuracoes tipadas via variaveis de ambiente.
 - `internal/gitops`: Servico de abstracao para operacoes Git.
 - `internal/ssh`: Servico de execucao de comandos remotos.
+- `internal/storage`: Persistencia de dados usando SQLite.
 - `internal/monitor`: Orquestrador do loop de execucao.
 
 ## Como Executar
@@ -20,13 +23,11 @@ Agente GitOps escrito em Go para monitoramento de repositorios e deteccao automa
 # Instale as dependencias
 go mod tidy
 
-# Configure as variaveis (opcional para SSH)
-$env:GOGITOPS_SSH_HOST="1.2.3.4"
-$env:GOGITOPS_SSH_USER="root"
-$env:GOGITOPS_SSH_KEY_PATH="C:\Users\user\.ssh\id_rsa"
-
 # Rodar o agente
 go run cmd/agent/main.go
+
+# Ver historico de deploys
+go run cmd/agent/main.go history
 ```
 
 ## Variaveis de Ambiente
@@ -35,6 +36,7 @@ go run cmd/agent/main.go
 | `GOGITOPS_REPO_URL` | URL do repositorio Git | `https://github.com/ESousa97/gogitopsdeployer` |
 | `GOGITOPS_INTERVAL` | Intervalo de checagem | `30s` |
 | `GOGITOPS_LOCAL_PATH` | Diretorio de cache local | `./repo-cache` |
+| `GOGITOPS_DB_PATH` | Caminho do banco SQLite | `./deployments.db` |
 | `GOGITOPS_SSH_HOST` | IP/Host da VPS | (Opcional) |
 | `GOGITOPS_SSH_USER` | Usuario SSH | (Opcional) |
 | `GOGITOPS_SSH_KEY_PATH` | Caminho para Chave Privada | (Opcional) |

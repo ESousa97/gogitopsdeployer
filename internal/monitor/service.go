@@ -8,6 +8,7 @@ import (
 	"gogitopsdeployer/internal/config"
 	"gogitopsdeployer/internal/gitops"
 	"gogitopsdeployer/internal/ssh"
+	"gogitopsdeployer/internal/storage"
 )
 
 // Monitor orquestra o loop de checagem.
@@ -15,14 +16,16 @@ type Monitor struct {
 	cfg        *config.Config
 	gitOps     *gitops.Service
 	sshService *ssh.Service
+	storage    *storage.Service
 }
 
 // NewMonitor cria uma nova instancia do orquestrador.
-func NewMonitor(cfg *config.Config, gitOps *gitops.Service, sshService *ssh.Service) *Monitor {
+func NewMonitor(cfg *config.Config, gitOps *gitops.Service, sshService *ssh.Service, storage *storage.Service) *Monitor {
 	return &Monitor{
 		cfg:        cfg,
 		gitOps:     gitOps,
 		sshService: sshService,
+		storage:    storage,
 	}
 }
 
@@ -61,8 +64,19 @@ func (m *Monitor) Start(ctx context.Context) error {
 
 				// 2. Disparar comandos SSH na VPS (se configurado)
 				if m.cfg.SSHHost != "" {
-					if err := m.sshService.RunCommands(); err != nil {
+					output, err := m.sshService.RunCommands()
+					status := "success"
+					if err != nil {
 						fmt.Printf("Erro ao executar comandos SSH: %v\n", err)
+						status = "failed"
+						if output == "" {
+							output = err.Error()
+						}
+					}
+					
+					// 3. Persistir o resultado do deploy
+					if err := m.storage.RecordDeploy(hash, status, output); err != nil {
+						fmt.Printf("Erro ao salvar no banco: %v\n", err)
 					}
 				}
 			} else {
