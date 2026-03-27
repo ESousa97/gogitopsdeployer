@@ -7,27 +7,30 @@ import (
 
 	"gogitopsdeployer/internal/config"
 	"gogitopsdeployer/internal/gitops"
+	"gogitopsdeployer/internal/notification"
 	"gogitopsdeployer/internal/ssh"
 	"gogitopsdeployer/internal/storage"
 )
 
 // Monitor orquestra o loop de checagem.
 type Monitor struct {
-	cfg         *config.Config
-	gitOps      *gitops.Service
-	sshService  *ssh.Service
-	storage     *storage.Service
-	triggerChan chan struct{}
+	cfg          *config.Config
+	gitOps       *gitops.Service
+	sshService   *ssh.Service
+	storage      *storage.Service
+	notification *notification.Service
+	triggerChan  chan struct{}
 }
 
 // NewMonitor cria uma nova instancia do orquestrador.
-func NewMonitor(cfg *config.Config, gitOps *gitops.Service, sshService *ssh.Service, storage *storage.Service, triggerChan chan struct{}) *Monitor {
+func NewMonitor(cfg *config.Config, gitOps *gitops.Service, sshService *ssh.Service, storage *storage.Service, notification *notification.Service, triggerChan chan struct{}) *Monitor {
 	return &Monitor{
-		cfg:         cfg,
-		gitOps:      gitOps,
-		sshService:  sshService,
-		storage:     storage,
-		triggerChan: triggerChan,
+		cfg:          cfg,
+		gitOps:       gitOps,
+		sshService:   sshService,
+		storage:      storage,
+		notification: notification,
+		triggerChan:  triggerChan,
 	}
 }
 
@@ -77,19 +80,33 @@ func (m *Monitor) performCheck() {
 		// 2. Disparar comandos SSH na VPS (se configurado)
 		if m.cfg.SSHHost != "" {
 			output, err := m.sshService.RunCommands()
-			status := "success"
 			if err != nil {
-				fmt.Printf("Erro ao executar comandos SSH: %v\n", err)
-				status = "failed"
-				if output == "" {
-					output = err.Error()
+				fmt.Printf("[Monitor] Deploy FAILED: %v\n", err)
+				
+				// Persiste Falha
+				m.storage.RecordDeploy(hash, config.StatusFailed, output)
+				
+				// Notifica Discord (Falha)
+				m.notification.Notify(config.StatusFailed, "Deploy failed. Initiating auto-rollback...", hash)
+
+				// 3. AUTO-ROLLBACK
+				fmt.Println("[Monitor] Executando Rollback de emergencia...")
+				rbOutput, rbErr := m.sshService.RunRollback()
+				if rbErr != nil {
+					fmt.Printf("[Monitor] ROLLBACK FAILED: %v\n", rbErr)
+					m.notification.Notify(config.StatusFailed, fmt.Sprintf("CRITICAL: Rollback also failed!\n%s", rbOutput), hash)
+				} else {
+					fmt.Println("[Monitor] Rollback executado com sucesso.")
+					m.storage.RecordDeploy(hash, config.StatusRollback, rbOutput)
+					m.notification.Notify(config.StatusRollback, "System restored to previous stable version.", hash)
 				}
+				return
 			}
 			
-			// 3. Persistir o resultado do deploy
-			if err := m.storage.RecordDeploy(hash, status, output); err != nil {
-				fmt.Printf("Erro ao salvar no banco: %v\n", err)
-			}
+			// 4. Sucesso
+			fmt.Println("[Monitor] Deploy finalizado com sucesso.")
+			m.storage.RecordDeploy(hash, config.StatusSuccess, output)
+			m.notification.Notify(config.StatusSuccess, "Deploy successful.", hash)
 		}
 	} else {
 		// Log discreto para estudo

@@ -11,6 +11,7 @@ import (
 	"gogitopsdeployer/internal/config"
 	"gogitopsdeployer/internal/gitops"
 	"gogitopsdeployer/internal/monitor"
+	"gogitopsdeployer/internal/notification"
 	"gogitopsdeployer/internal/ssh"
 	"gogitopsdeployer/internal/storage"
 	"gogitopsdeployer/internal/webhook"
@@ -44,7 +45,8 @@ func main() {
 	// 5. Inicializa Servicos (Inversao de Dependencia - P1 Antigravity)
 	gitOps := gitops.NewService(cfg)
 	sshService := ssh.NewService(cfg)
-	agent := monitor.NewMonitor(cfg, gitOps, sshService, db, triggerChan)
+	notifier := notification.NewService(cfg)
+	agent := monitor.NewMonitor(cfg, gitOps, sshService, db, notifier, triggerChan)
 	webhookSvc := webhook.NewService(cfg, triggerChan)
 
 	// 6. Roda o Servidor Webhook em Background

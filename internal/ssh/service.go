@@ -82,3 +82,44 @@ func (s *Service) RunCommands() (string, error) {
 	fmt.Println("[SSH] Todos os comandos executados com sucesso.")
 	return combinedOutput, nil
 }
+
+// RunRollback executa o comando de rollback configurado na VPS.
+func (s *Service) RunRollback() (string, error) {
+	if s.cfg.SSHHost == "" || s.cfg.RollbackCommand == "" {
+		return "", nil
+	}
+
+	fmt.Printf("[SSH] Iniciando ROLLBACK em %s...\n", s.cfg.SSHHost)
+
+	// Carrega a chave privada
+	key, err := os.ReadFile(s.cfg.SSHKeyPath)
+	if err != nil {
+		return "", err
+	}
+
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		return "", err
+	}
+
+	config := &ssh.ClientConfig{
+		User: s.cfg.SSHUser,
+		Auth: []ssh.AuthMethod{ssh.PublicKeys(signer)},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+	}
+
+	client, err := ssh.Dial("tcp", s.cfg.SSHHost+":22", config)
+	if err != nil {
+		return "", err
+	}
+	defer client.Close()
+
+	session, err := client.NewSession()
+	if err != nil {
+		return "", err
+	}
+	defer session.Close()
+
+	output, err := session.CombinedOutput(s.cfg.RollbackCommand)
+	return string(output), err
+}

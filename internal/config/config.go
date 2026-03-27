@@ -15,16 +15,26 @@ type Config struct {
 	// Database Settings
 	DBPath string
 
+	// Notification Settings
+	DiscordWebhookURL string
+
 	// Webhook Settings
 	WebhookPort   string
 	WebhookSecret string
 
 	// SSH Settings
-	SSHHost     string
-	SSHUser     string
-	SSHKeyPath  string
-	SSHCommands []string
+	SSHHost         string
+	SSHUser         string
+	SSHKeyPath      string
+	SSHCommands     []string
+	RollbackCommand string
 }
+
+const (
+	StatusSuccess  = "success"
+	StatusFailed   = "failed"
+	StatusRollback = "rollback"
+)
 
 // LoadConfig carrega as configuracoes do ambiente ou usa valores default.
 func LoadConfig() (*Config, error) {
@@ -44,22 +54,27 @@ func LoadConfig() (*Config, error) {
 	webhookPort := getEnv("GOGITOPS_WEBHOOK_PORT", "8080")
 	webhookSecret := os.Getenv("GOGITOPS_WEBHOOK_SECRET")
 
+	discordWebhookURL := os.Getenv("GOGITOPS_DISCORD_WEBHOOK")
+
 	sshHost := os.Getenv("GOGITOPS_SSH_HOST")
 	sshUser := os.Getenv("GOGITOPS_SSH_USER")
 	sshKeyPath := os.Getenv("GOGITOPS_SSH_KEY_PATH")
 	sshCommandsStr := getEnv("GOGITOPS_SSH_COMMANDS", "cd /app && git pull && docker-compose up --build -d")
+	rollbackCommand := getEnv("GOGITOPS_ROLLBACK_COMMAND", "cd /app && git checkout HEAD^ && docker-compose up -d")
 
 	cfg := &Config{
-		RepoURL:       repoURL,
-		Interval:      interval,
-		LocalPath:     localPath,
-		DBPath:        dbPath,
-		WebhookPort:   webhookPort,
-		WebhookSecret: webhookSecret,
-		SSHHost:       sshHost,
-		SSHUser:       sshUser,
-		SSHKeyPath:    sshKeyPath,
-		SSHCommands:   []string{sshCommandsStr}, // Por enquanto um comando composto
+		RepoURL:           repoURL,
+		Interval:          interval,
+		LocalPath:         localPath,
+		DBPath:            dbPath,
+		DiscordWebhookURL: discordWebhookURL,
+		WebhookPort:       webhookPort,
+		WebhookSecret:     webhookSecret,
+		SSHHost:           sshHost,
+		SSHUser:           sshUser,
+		SSHKeyPath:        sshKeyPath,
+		SSHCommands:       []string{sshCommandsStr}, // Por enquanto um comando composto
+		RollbackCommand:   rollbackCommand,
 	}
 
 	if err := cfg.Validate(); err != nil {
