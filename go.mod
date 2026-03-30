@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/glebarez/go-sqlite v1.22.0
-	github.com/go-git/go-git/v5 v5.17.0
+	github.com/go-git/go-git/v5 v5.17.1
 	golang.org/x/crypto v0.49.0
 )
 
