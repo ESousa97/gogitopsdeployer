@@ -106,6 +106,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 Made with ❤️ by [Enoque Sousa](https://github.com/ESousa97)
 
-**Project Status:** Active Development
+**Project Status:** Archived — Study Project
 
 </div>
